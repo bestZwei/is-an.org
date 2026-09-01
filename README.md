@@ -1,70 +1,39 @@
-# is-an.org — Free Subdomain Service
+# is-an.org
 
-A single-page, fully static application page where users can request a free `yourname.is-an.org` subdomain for open-source projects, personal projects, and non-profit organizations.
+Free second-level domains for your projects.
 
-## How it works
+is-an.org is a free service that provides subdomains like `yourname.is-an.org` to open-source projects, personal projects, and non-profit organizations. Give your project a clean, stable address without paying for a domain.
 
-Pure frontend + email. No backend, no database, no third-party services:
+## Who it's for
 
-1. The applicant fills in a form: desired subdomain, name, contact email, project type, description, and DNS records.
-2. Clicking **Submit** opens their mail app with a pre-filled email addressed to `contact@is-an.org`.
-3. The administrator manually reviews the request, adds the DNS records if approved, and replies to the applicant.
+- Open-source projects that need a memorable homepage
+- Personal projects, portfolios, and experiments
+- Non-profit and community organizations
+- Educational projects
 
-## Project structure
+## How to get a subdomain
 
-```
-.
-├── index.html   # The application page (the only file you need)
-└── README.md
-```
+1. Decide on the subdomain you want, e.g. `myproject.is-an.org`
+2. Prepare the DNS records you want us to create — **NS records are preferred**
+3. Send your request by email to **contact@is-an.org**
 
-## Features
+## What to include in your request
 
-- Subdomain input with silent cleanup — lowercases, strips invalid characters, and merges consecutive hyphens automatically
-- Multiple DNS records per request — **A / AAAA / CNAME / NS / MX / TXT**
-- **NS records are recommended**: delegating DNS management to the applicant's own provider (e.g. Cloudflare's free plan) lets them manage their own records without contacting you
-- **Copy Application** button for users without a configured mail client (e.g. on mobile) — they can paste the content into any webmail
-- Fully responsive, mobile-friendly
+Your request email should contain:
 
-## Deploy
+- **The subdomain** you'd like to use
+- **DNS records** — NS records are preferred, since they delegate DNS management for your subdomain to your own provider (such as Cloudflare). You can then manage all your records yourself, without contacting us. If you just need to point to an IP or domain, A / AAAA / CNAME records work too.
+- **A short description** of what the subdomain will be used for
 
-The page runs on any static hosting platform, for example:
+Requests are reviewed manually and replies are usually sent within 24–48 hours.
 
-- **Cloudflare Pages**
-- **GitHub Pages**
-- **Vercel / Netlify**
-- **Any Nginx or object-storage static site**
+## Rules
 
-### Cloudflare Pages example
+- The service is completely free
+- Subdomains are for lawful, legitimate use only
+- Domains that are left unmaintained or whose content becomes inactive may be reclaimed
+- Prohibited uses: illegal content, phishing, spam, gambling, adult content, trademark infringement, impersonation, and similar
 
-1. Create a Pages project in the [Cloudflare Dashboard](https://dash.cloudflare.com).
-2. Connect this repository (or upload `index.html` directly).
-3. Build settings: leave Build command empty and set Build output directory to `/`.
-4. After deploying, add the custom domain `is-an.org`.
+## Contact
 
-## Configuration
-
-To change the recipient email, edit the `RECIPIENT` variable in `index.html`:
-
-```javascript
-var RECIPIENT = 'contact@is-an.org';
-```
-
-## Administrator workflow
-
-1. Read the incoming application email.
-2. Approve or reject based on the service rules shown on the page.
-3. If approved, add the requested DNS record(s) for the subdomain in your DNS provider (e.g. Cloudflare):
-   - **NS record** — add the applicant's nameservers; the applicant then manages everything else themselves.
-   - **A / AAAA / CNAME** — add the record pointing to the target IP or domain.
-4. Reply to the applicant with the result.
-
-## Notes
-
-- Emails are sent via `mailto:` from the applicant's local mail client — nothing goes through a server.
-- The page cannot check whether a subdomain is already taken; that is part of the manual review.
-- Domains that are left unmaintained or used for prohibited purposes may be reclaimed.
-
-## License
-
-MIT
+Questions or requests? Email **contact@is-an.org**.
