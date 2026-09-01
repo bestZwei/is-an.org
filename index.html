@@ -681,7 +681,7 @@
                 <span class="step-num">02</span>
                 <div class="step-body">
                     <strong>Send via email</strong>
-                    <span>Your mail app opens addressed to contact@is-an.org</span>
+                    <span>Your mail app opens addressed to contact#is-an.org</span>
                 </div>
             </div>
             <div class="step">
@@ -745,7 +745,7 @@
             <!-- Right: application form -->
             <section id="apply" class="card apply-sticky">
                 <h2 class="card-title">Apply for a Subdomain</h2>
-                <p class="card-sub">Submitting opens your mail app addressed to contact@is-an.org</p>
+                <p class="card-sub">Submitting opens your mail app addressed to contact#is-an.org</p>
 
                 <form id="applicationForm" novalidate>
                     <h3 class="form-section-title">Basic Info</h3>
@@ -815,7 +815,7 @@
                     <div class="mailto-tip">
                         <strong>Tip:</strong> If clicking submit doesn't open your mail app (e.g. on mobile),
                         click “Copy Application”, then paste it into any mailbox and send it to
-                        <strong>contact@is-an.org</strong>.
+                        <strong>contact#is-an.org</strong> (replace <code>#</code> with <code>@</code> when sending).
                     </div>
                 </form>
             </section>
@@ -824,7 +824,7 @@
 
     <footer>
         <div class="container">
-            <a class="email" href="mailto:contact@is-an.org">✉ contact@is-an.org</a>
+            <a class="email" id="emailLink" href="#">✉ contact#is-an.org</a>
             <p>is-an.org · Free community domain service · By applying, you agree to the service rules</p>
         </div>
     </footer>
@@ -835,12 +835,14 @@
         (function () {
             'use strict';
 
-            var RECIPIENT = 'contact@is-an.org';
+            // Obfuscated to keep the address out of plaintext HTML (anti-scraping).
+            var RECIPIENT = 'contact' + '@' + 'is-an.org';
             var form = document.getElementById('applicationForm');
             var subdomainInput = document.getElementById('subdomain');
             var submitBtn = document.getElementById('submitBtn');
             var copyBtn = document.getElementById('copyBtn');
             var toast = document.getElementById('toast');
+            var emailLink = document.getElementById('emailLink');
             var toastTimer = null;
 
             /* ---------- Helpers ---------- */
@@ -941,6 +943,9 @@
                     btns[i].disabled = single;
                 }
             }
+
+            // Activate the obfuscated footer email link
+            emailLink.href = 'mailto:' + RECIPIENT;
 
             // Start with one NS record
             addRecord('NS');

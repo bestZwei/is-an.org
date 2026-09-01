@@ -15,7 +15,7 @@ is-an.org is a free service that provides subdomains like `yourname.is-an.org` t
 
 1. Decide on the subdomain you want, e.g. `myproject.is-an.org`
 2. Prepare the DNS records you want us to create — **NS records are preferred**
-3. Send your request by email to **contact@is-an.org**
+3. Send your request by email to **contact#is-an.org** (replace `#` with `@`)
 
 ## What to include in your request
 
@@ -36,4 +36,4 @@ Requests are reviewed manually and replies are usually sent within 24–48 hours
 
 ## Contact
 
-Questions or requests? Email **contact@is-an.org**.
+Questions or requests? Email **contact#is-an.org** — just replace the `#` with `@`. (The `#` is used on this page to prevent spambots from harvesting the address.)
