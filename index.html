@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>is-an.org - Free Subdomain Service</title>
+    <meta name="description" content="is-an.org provides free second-level domains. Get a free yourname.is-an.org subdomain for your open-source project, personal project, or non-profit organization.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --card-bg: #111111;
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text: #ededed;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            --text-faint: rgba(255, 255, 255, 0.35);
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --input-border: rgba(255, 255, 255, 0.16);
+            --accent: #0070f3;
+            --accent-hover: #007acc;
+            --success: #3ecf8e;
+            --danger: #ff5c5c;
+            --radius: 10px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* Grid background */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+            background-size: 64px 64px;
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 90%);
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 90%);
+        }
+
+        /* Top glow */
+        .glow {
+            position: fixed;
+            top: -240px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 480px;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(0, 112, 243, 0.16) 0%, transparent 65%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== Top navigation ===== */
+        nav {
+            padding: 24px 0;
+        }
+
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-decoration: none;
+            letter-spacing: 0.2px;
+        }
+
+        .brand-mark {
+            display: inline-block;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        /* ===== Hero ===== */
+        .hero {
+            text-align: center;
+            padding: 80px 0 72px;
+        }
+
+        .hero h1 {
+            font-size: 3.6rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1.12;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 .accent {
+            background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.6));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.12rem;
+            color: var(--text-muted);
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        .hero-cta {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 36px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background .2s, transform .15s;
+        }
+
+        .btn-hero:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+        .hero-badges {
+            margin-top: 26px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-size: 0.84rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== How it works ===== */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+
+        .step {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 20px 26px;
+        }
+
+        .step + .step { border-left: 1px solid var(--card-border); }
+
+        .step-num {
+            font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            opacity: 0.75;
+            line-height: 1.15;
+        }
+
+        .step-body strong {
+            display: block;
+            font-size: 0.98rem;
+            font-weight: 600;
+        }
+
+        .step-body span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== Main content cards ===== */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+        }
+
+        .card-sub {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        /* Rules list */
+        .rules {
+            list-style: none;
+        }
+
+        .rules li {
+            position: relative;
+            padding: 11px 0 11px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .rules li:last-child { border-bottom: none; }
+
+        .rules li::before {
+            content: '✓';
+            position: absolute;
+            left: 2px;
+            top: 10px;
+            color: var(--success);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .rules li.warn::before {
+            content: '!';
+            color: var(--danger);
+        }
+
+        .banned {
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: rgba(255, 92, 92, 0.08);
+            border: 1px solid rgba(255, 92, 92, 0.25);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .banned strong { color: #ff8080; }
+
+        /* ===== Form ===== */
+        .form-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
+            margin: 24px 0 16px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section-title::before {
+            content: '';
+            width: 16px;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--accent);
+        }
+
+        .form-section-title:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.92rem;
+            margin-bottom: 7px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group label .req { color: var(--danger); }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: var(--input-bg);
+            color: var(--text);
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(0, 112, 243, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.18);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-faint);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: var(--text);
+        }
+
+        .form-group textarea { resize: vertical; min-height: 84px; }
+
+        .subdomain-wrapper { display: flex; align-items: center; gap: 8px; }
+
+        .subdomain-wrapper .prefix {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        }
+
+        .subdomain-wrapper input { flex: 1; }
+
+        .dns-record {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .dns-record select {
+            flex: 0 0 auto;
+            width: 168px;
+        }
+
+        .dns-record input { flex: 1; min-width: 0; }
+
+        .dns-remove {
+            flex: 0 0 auto;
+            width: 42px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            line-height: 1;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color .2s, color .2s, background .2s;
+        }
+
+        .dns-remove:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(255, 92, 92, 0.08);
+        }
+
+        .dns-remove:disabled {
+            opacity: .3;
+            cursor: not-allowed;
+            border-color: var(--input-border);
+            color: var(--text-muted);
+            background: transparent;
+        }
+
+        .btn-add-record {
+            width: 100%;
+            padding: 9px 14px;
+            margin-top: 4px;
+            background: transparent;
+            border: 1px dashed var(--input-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color .2s, color .2s, background .2s;
+        }
+
+        .btn-add-record:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 112, 243, 0.05);
+        }
+
+        .hint { font-size: 0.82rem; color: var(--text-faint); margin-top: 6px; }
+        .hint.valid { color: var(--success); }
+        .hint.invalid { color: var(--danger); }
+
+        .form-actions {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.96rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, border-color .2s, color .2s, transform .15s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-primary:active { transform: translateY(1px); }
+        .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--input-border);
+        }
+
+        .btn-ghost:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.3); }
+
+        .mailto-tip {
+            margin-top: 14px;
+            padding: 12px 14px;
+            background: rgba(0, 112, 243, 0.08);
+            border: 1px solid rgba(0, 112, 243, 0.3);
+            border-radius: 8px;
+            font-size: 0.84rem;
+            color: rgba(255, 255, 255, 0.65);
+            line-height: 1.7;
+        }
+
+        .mailto-tip strong { color: #66b0ff; }
+
+        /* ===== FAQ ===== */
+        .faq { margin-top: 8px; }
+
+        details {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+            transition: border-color .2s;
+        }
+
+        details:hover { border-color: rgba(255, 255, 255, 0.2); }
+
+        summary {
+            padding: 14px 18px;
+            font-weight: 500;
+            cursor: pointer;
+            list-style: none;
+            position: relative;
+            padding-right: 40px;
+            font-size: 0.93rem;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        summary::after {
+            content: '+';
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: transform .2s;
+        }
+
+        details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+
+        details .answer {
+            padding: 0 18px 16px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            margin-top: 48px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 32px 0 48px;
+            text-align: center;
+            color: var(--text-faint);
+            font-size: 0.88rem;
+        }
+
+        footer .email {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            padding: 8px 20px;
+            margin-bottom: 16px;
+            color: var(--text);
+            font-weight: 500;
+            text-decoration: none;
+            transition: border-color .2s, background .2s;
+        }
+
+        footer .email:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            background: #1a1a1a;
+            border: 1px solid var(--card-border);
+            color: var(--text);
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: all .3s ease;
+            pointer-events: none;
+            max-width: calc(100vw - 40px);
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success { border-color: rgba(62, 207, 142, 0.5); color: var(--success); }
+        .toast.error { border-color: rgba(255, 92, 92, 0.5); color: var(--danger); }
+
+        /* ===== Responsive ===== */
+        @media (min-width: 861px) {
+            .apply-sticky { position: sticky; top: 24px; }
+        }
+
+        @media (max-width: 860px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .hero { padding: 56px 0 48px; }
+            .hero h1 { font-size: 2.4rem; }
+            .card { padding: 22px; }
+            .nav-links { display: none; }
+            .steps { grid-template-columns: 1fr; }
+            .step + .step { border-left: none; border-top: 1px solid var(--card-border); }
+            .form-actions { grid-template-columns: 1fr; }
+            .dns-record { flex-direction: column; }
+            .dns-record select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="glow"></div>
+
+    <nav>
+        <div class="container">
+            <a class="brand" href="/">
+                <span class="brand-mark">▲</span>
+                is-an.org
+            </a>
+            <ul class="nav-links">
+                <li><a href="#rules">Service Rules</a></li>
+                <li><a href="#apply">Apply</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Free Subdomains<br><span class="accent">yourname.is-an.org</span></h1>
+            <p>Free second-level domains for open-source projects, personal projects, and non-profit organizations. Give your project a clean and stable address.</p>
+            <div class="hero-cta">
+                <a class="btn-hero" href="#apply">Apply Now</a>
+            </div>
+            <div class="hero-badges">
+                <span class="hero-badge">100% Free</span>
+                <span class="hero-badge">Quick Review</span>
+                <span class="hero-badge">Long-term Support</span>
+                <span class="hero-badge">Community-driven</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="steps">
+            <div class="step">
+                <span class="step-num">01</span>
+                <div class="step-body">
+                    <strong>Fill in the form</strong>
+                    <span>Enter your subdomain, purpose, and DNS records</span>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-num">02</span>
+                <div class="step-body">
+                    <strong>Send via email</strong>
+                    <span>Your mail app opens addressed to contact@is-an.org</span>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-num">03</span>
+                <div class="step-body">
+                    <strong>Review & activate</strong>
+                    <span>We reply with the result within 24-48 hours</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <main class="container">
+        <div class="main-grid">
+            <!-- Left: rules -->
+            <div>
+                <section id="rules" class="card">
+                    <h2 class="card-title">Service Rules</h2>
+                    <p class="card-sub">Please confirm you meet the requirements below before applying</p>
+                    <ul class="rules">
+                        <li>Free for open-source projects, personal projects, and non-profit organizations</li>
+                        <li>After approval, you can use <strong>yourname.is-an.org</strong></li>
+                        <li>You must provide DNS records (NS records for self-management are recommended)</li>
+                        <li>Domains that are left unmaintained or whose content becomes inactive may be reclaimed</li>
+                        <li>Lawful and legitimate use only</li>
+                    </ul>
+                    <div class="banned">
+                        <strong>Prohibited:</strong> illegal content, phishing, spam, gambling, adult content,
+                        trademark infringement, impersonation, and any other activity that violates laws or ethical standards.
+                    </div>
+                </section>
+
+                <section id="faq" class="card">
+                    <h2 class="card-title">FAQ</h2>
+                    <p class="card-sub">Common questions about subdomain requests</p>
+                    <div class="faq">
+                        <details>
+                            <summary>Is this service free?</summary>
+                            <div class="answer">Yes, completely free. This is a community project providing free subdomains to open-source developers and individuals.</div>
+                        </details>
+                        <details>
+                            <summary>How long does the review take?</summary>
+                            <div class="answer">After we receive your application, it is usually processed within 24-48 hours. We reply to the email you provided, so please keep an eye on your inbox.</div>
+                        </details>
+                        <details>
+                            <summary>What do I need to provide?</summary>
+                            <div class="answer">The subdomain you want, a short description of your project, and DNS records (NS / A / AAAA / CNAME).</div>
+                        </details>
+                        <details>
+                            <summary>Why are NS records recommended?</summary>
+                            <div class="answer">An NS record delegates DNS management for your subdomain to your own DNS provider (e.g. Cloudflare's free plan). You can then add or modify A/AAAA/CNAME records yourself anytime without contacting us — more flexible and faster. If you just want to point to a single IP or domain, A/AAAA/CNAME records work too.</div>
+                        </details>
+                        <details>
+                            <summary>Can my domain be reclaimed?</summary>
+                            <div class="answer">If the domain is left unmaintained, its content becomes inactive, or it is used for prohibited purposes, it may be reclaimed. Regular use keeps it valid long-term.</div>
+                        </details>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right: application form -->
+            <section id="apply" class="card apply-sticky">
+                <h2 class="card-title">Apply for a Subdomain</h2>
+                <p class="card-sub">Submitting opens your mail app addressed to contact@is-an.org</p>
+
+                <form id="applicationForm" novalidate>
+                    <h3 class="form-section-title">Basic Info</h3>
+
+                    <div class="form-group">
+                        <label for="subdomain">Desired Subdomain <span class="req">*</span></label>
+                        <div class="subdomain-wrapper">
+                            <input type="text" id="subdomain" name="subdomain"
+                                   placeholder="yourname" maxlength="63" autocomplete="off">
+                            <span class="prefix">.is-an.org</span>
+                        </div>
+                        <p class="hint">Lowercase letters, digits, and hyphens only. Invalid characters are filtered automatically.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applicant">Name / Organization <span class="req">*</span></label>
+                        <input type="text" id="applicant" name="applicant" placeholder="e.g. Alice or the Foo Project team" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Contact Email <span class="req">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                        <p class="hint">The review result will be sent to this address</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectType">Project Type <span class="req">*</span></label>
+                        <select id="projectType" name="projectType" required>
+                            <option value="">Select…</option>
+                            <option value="Personal project">Personal project</option>
+                            <option value="Open-source project">Open-source project</option>
+                            <option value="Organization / Team">Organization / Team</option>
+                            <option value="Non-profit organization">Non-profit organization</option>
+                            <option value="Educational">Educational</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Project / Website Description <span class="req">*</span></label>
+                        <textarea id="description" name="description" rows="3"
+                                  placeholder="Briefly describe your project or website" required></textarea>
+                    </div>
+
+                    <h3 class="form-section-title">DNS Records</h3>
+
+                    <div class="form-group">
+                        <label>DNS Records <span class="req">*</span></label>
+                        <div id="dnsRecords">
+                            <!-- record rows are generated by JS -->
+                        </div>
+                        <button type="button" class="btn-add-record" id="addRecordBtn">＋ Add Record</button>
+                        <p class="hint" id="dnsHint">You can add multiple records (e.g. A + AAAA for dual-stack, multiple NS servers). NS records for self-management are recommended.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="note">Notes (Optional)</label>
+                        <textarea id="note" name="note" rows="2"
+                                  placeholder="Any additional information"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Submit & Send Email</button>
+                        <button type="button" class="btn btn-ghost" id="copyBtn">Copy Application</button>
+                    </div>
+
+                    <div class="mailto-tip">
+                        <strong>Tip:</strong> If clicking submit doesn't open your mail app (e.g. on mobile),
+                        click “Copy Application”, then paste it into any mailbox and send it to
+                        <strong>contact@is-an.org</strong>.
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <a class="email" href="mailto:contact@is-an.org">✉ contact@is-an.org</a>
+            <p>is-an.org · Free community domain service · By applying, you agree to the service rules</p>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            var RECIPIENT = 'contact@is-an.org';
+            var form = document.getElementById('applicationForm');
+            var subdomainInput = document.getElementById('subdomain');
+            var submitBtn = document.getElementById('submitBtn');
+            var copyBtn = document.getElementById('copyBtn');
+            var toast = document.getElementById('toast');
+            var toastTimer = null;
+
+            /* ---------- Helpers ---------- */
+            function showToast(message, type) {
+                toast.textContent = message;
+                toast.className = 'toast show ' + (type || '');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function () {
+                    toast.className = 'toast';
+                }, 3200);
+            }
+
+            function isValidEmail(value) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            }
+
+            /* ---------- Subdomain: silent cleanup (lowercase / strip invalid chars / merge hyphens) ---------- */
+            subdomainInput.addEventListener('input', function () {
+                var raw = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                raw = raw.replace(/^-+|-+$/g, '');      // remove leading/trailing hyphens
+                raw = raw.replace(/-{2,}/g, '-');        // merge consecutive hyphens
+                this.value = raw;
+            });
+
+            /* ---------- DNS records (multiple supported) ---------- */
+            var DNS_TYPES = ['A', 'AAAA', 'CNAME', 'NS', 'MX', 'TXT'];
+            var DNS_HINTS = {
+                'A':     { label: 'A (IPv4)',          placeholder: '203.0.113.10',        hint: 'Resolves to this IPv4 address' },
+                'AAAA':  { label: 'AAAA (IPv6)',       placeholder: '2001:db8::10',        hint: 'Resolves to this IPv6 address' },
+                'CNAME': { label: 'CNAME',             placeholder: 'target.example.com',  hint: 'CNAME points to this target domain' },
+                'NS':    { label: 'NS',                placeholder: 'ns1.example.com',     hint: 'Delegates DNS management for this subdomain to your provider (e.g. Cloudflare); you can then manage records yourself' },
+                'MX':    { label: 'MX',                placeholder: '10 mail.example.com', hint: 'Mail exchange record, format: priority target' },
+                'TXT':   { label: 'TXT',               placeholder: 'v=spf1 ... or any text', hint: 'Text record for SPF, domain verification, etc.' }
+            };
+            var MAX_RECORDS = 10;
+
+            var dnsContainer = document.getElementById('dnsRecords');
+            var addRecordBtn = document.getElementById('addRecordBtn');
+
+            function buildRecordRow(type) {
+                var row = document.createElement('div');
+                row.className = 'dns-record';
+
+                var select = document.createElement('select');
+                select.className = 'dns-type';
+                DNS_TYPES.forEach(function (t) {
+                    var opt = document.createElement('option');
+                    opt.value = t;
+                    opt.textContent = DNS_HINTS[t].label;
+                    if (t === type) opt.selected = true;
+                    select.appendChild(opt);
+                });
+
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'dns-value';
+                input.placeholder = DNS_HINTS[type].placeholder;
+                input.setAttribute('autocomplete', 'off');
+
+                var removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'dns-remove';
+                removeBtn.title = 'Remove this record';
+                removeBtn.textContent = '×';
+                removeBtn.addEventListener('click', function () {
+                    removeRecord(row);
+                });
+
+                select.addEventListener('change', function () {
+                    input.placeholder = DNS_HINTS[this.value].placeholder;
+                });
+
+                row.appendChild(select);
+                row.appendChild(input);
+                row.appendChild(removeBtn);
+                return row;
+            }
+
+            function addRecord(type) {
+                if (dnsContainer.children.length >= MAX_RECORDS) {
+                    showToast('A maximum of ' + MAX_RECORDS + ' DNS records is allowed', 'error');
+                    return;
+                }
+                dnsContainer.appendChild(buildRecordRow(type || 'NS'));
+                syncRemoveButtons();
+            }
+
+            function removeRecord(row) {
+                if (dnsContainer.children.length <= 1) return;
+                dnsContainer.removeChild(row);
+                syncRemoveButtons();
+            }
+
+            function syncRemoveButtons() {
+                var single = dnsContainer.children.length <= 1;
+                var btns = dnsContainer.querySelectorAll('.dns-remove');
+                for (var i = 0; i < btns.length; i++) {
+                    btns[i].disabled = single;
+                }
+            }
+
+            // Start with one NS record
+            addRecord('NS');
+
+            addRecordBtn.addEventListener('click', function () {
+                addRecord();
+            });
+
+            function isValidDnsValue(type, value) {
+                if (!value) return false;
+                if (type === 'A') {
+                    return /^(\d{1,3}\.){3}\d{1,3}$/.test(value);
+                }
+                if (type === 'AAAA') {
+                    return value.indexOf(':') !== -1;
+                }
+                if (type === 'NS' || type === 'CNAME' || type === 'MX') {
+                    // Domain format (MX may have a priority prefix)
+                    return /^(\d+\s+)?[a-zA-Z0-9]([a-zA-Z0-9.\-]*[a-zA-Z0-9])?$/.test(value);
+                }
+                return true; // TXT etc. accept any text
+            }
+
+            /* ---------- Validate and collect form data ---------- */
+            function validate() {
+                var data = {
+                    subdomain: subdomainInput.value.trim(),
+                    applicant: document.getElementById('applicant').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    projectType: document.getElementById('projectType').value,
+                    description: document.getElementById('description').value.trim(),
+                    note: document.getElementById('note').value.trim()
+                };
+
+                if (!data.subdomain) {
+                    showToast('Please enter the desired subdomain', 'error');
+                    subdomainInput.focus();
+                    return null;
+                }
+                if (!data.applicant) {
+                    showToast('Please enter your name or organization', 'error');
+                    document.getElementById('applicant').focus();
+                    return null;
+                }
+                if (!isValidEmail(data.email)) {
+                    showToast('Please enter a valid contact email', 'error');
+                    document.getElementById('email').focus();
+                    return null;
+                }
+                if (!data.projectType) {
+                    showToast('Please select a project type', 'error');
+                    return null;
+                }
+                if (!data.description) {
+                    showToast('Please describe your project', 'error');
+                    document.getElementById('description').focus();
+                    return null;
+                }
+                // Collect and validate DNS records (multiple supported)
+                var records = [];
+                var rows = dnsContainer.querySelectorAll('.dns-record');
+                for (var i = 0; i < rows.length; i++) {
+                    var rType = rows[i].querySelector('.dns-type').value;
+                    var rValue = rows[i].querySelector('.dns-value').value.trim();
+                    if (!rValue) {
+                        showToast('Please fill in the value of DNS record #' + (i + 1), 'error');
+                        rows[i].querySelector('.dns-value').focus();
+                        return null;
+                    }
+                    if (!isValidDnsValue(rType, rValue)) {
+                        showToast('DNS record #' + (i + 1) + ' (' + rType + ') has an invalid format', 'error');
+                        rows[i].querySelector('.dns-value').focus();
+                        return null;
+                    }
+                    records.push({ type: rType, value: rValue });
+                }
+                data.records = records;
+                return data;
+            }
+
+            /* ---------- Build the email content ---------- */
+            function buildMailContent(data) {
+                var now = new Date();
+                var timeStr = now.toLocaleString('en-US');
+
+                var dnsLines = '';
+                for (var i = 0; i < data.records.length; i++) {
+                    dnsLines += '  ' + (i + 1) + '. [' + data.records[i].type + '] ' + data.records[i].value + '\n';
+                }
+
+                var body =
+                    '=============================================\n' +
+                    '          is-an.org Subdomain Request\n' +
+                    '=============================================\n\n' +
+                    'Desired subdomain : ' + data.subdomain + '.is-an.org\n' +
+                    'Name / Org        : ' + data.applicant + '\n' +
+                    'Contact email     : ' + data.email + '\n' +
+                    'Project type      : ' + data.projectType + '\n' +
+                    'Submitted at      : ' + timeStr + '\n\n' +
+                    'DNS records:\n' +
+                    dnsLines +
+                    'Project description:\n' +
+                    '---------------------------------------------\n' +
+                    data.description + '\n' +
+                    '---------------------------------------------\n\n';
+
+                if (data.note) {
+                    body += 'Notes:\n' + data.note + '\n\n';
+                }
+
+                body +=
+                    '=============================================\n' +
+                    'This email was generated by the is-an.org\n' +
+                    'application form. Please send it as-is;\n' +
+                    'we usually reply within 24-48 hours.\n';
+
+                var subject = '[is-an.org] Subdomain request: ' + data.subdomain + '.is-an.org';
+                return { subject: subject, body: body };
+            }
+
+            /* ---------- Build the mailto link ---------- */
+            function buildMailto(data) {
+                var content = buildMailContent(data);
+                return 'mailto:' + RECIPIENT +
+                    '?subject=' + encodeURIComponent(content.subject) +
+                    '&body=' + encodeURIComponent(content.body);
+            }
+
+            /* ---------- Form submit: open the mail app ---------- */
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                var data = validate();
+                if (!data) return;
+
+                var mailtoUrl = buildMailto(data);
+
+                // Try to open the mail app
+                window.location.href = mailtoUrl;
+
+                showToast('Your mail app should have opened — please click Send to complete your application', 'success');
+            });
+
+            /* ---------- Copy application content ---------- */
+            copyBtn.addEventListener('click', function () {
+                var data = validate();
+                if (!data) return;
+
+                var content = buildMailContent(data);
+                var text = 'To: ' + RECIPIENT + '\nSubject: ' + content.subject + '\n\n' + content.body;
+
+                copyText(text);
+            });
+
+            function copyText(text) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function () {
+                        showToast('Application copied — paste it into an email and send it to ' + RECIPIENT, 'success');
+                    }).catch(function () {
+                        fallbackCopy(text);
+                    });
+                } else {
+                    fallbackCopy(text);
+                }
+            }
+
+            function fallbackCopy(text) {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Application copied — paste it into an email and send it to ' + RECIPIENT, 'success');
+                } catch (err) {
+                    showToast('Copy failed — please copy manually', 'error');
+                }
+                document.body.removeChild(textarea);
+            }
+        })();
+    </script>
+</body>
+</html>
