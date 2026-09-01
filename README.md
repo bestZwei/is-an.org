@@ -1,55 +1,70 @@
-# is-an.org - 免费二级域名申请
+# is-an.org — Free Subdomain Service
 
-一个纯静态的二级域名申请页面，为开源项目、个人作品和非营利组织提供 `yourname.is-an.org` 免费子域名。
+A single-page, fully static application page where users can request a free `yourname.is-an.org` subdomain for open-source projects, personal projects, and non-profit organizations.
 
-## 工作原理
+## How it works
 
-纯前端 + 邮件：
+Pure frontend + email. No backend, no database, no third-party services:
 
-1. 申请者填写表单（子域名、申请人、邮箱、项目类型、描述、目标 IP/CNAME）
-2. 点击「提交申请」后自动打开邮件客户端，申请内容以邮件形式发往 `contact@is-an.org`
-3. 管理员收到邮件后人工审核，通过后手动配置 DNS 解析并回复申请者
+1. The applicant fills in a form: desired subdomain, name, contact email, project type, description, and DNS records.
+2. Clicking **Submit** opens their mail app with a pre-filled email addressed to `contact@is-an.org`.
+3. The administrator manually reviews the request, adds the DNS records if approved, and replies to the applicant.
 
-无需数据库、无需后端服务、无需 API Key。
-
-## 项目结构
+## Project structure
 
 ```
 .
-├── index.html   # 申请页面（唯一的文件）
+├── index.html   # The application page (the only file you need)
 └── README.md
 ```
 
-## 部署
+## Features
 
-任意静态托管平台均可，例如：
+- Subdomain input with silent cleanup — lowercases, strips invalid characters, and merges consecutive hyphens automatically
+- Multiple DNS records per request — **A / AAAA / CNAME / NS / MX / TXT**
+- **NS records are recommended**: delegating DNS management to the applicant's own provider (e.g. Cloudflare's free plan) lets them manage their own records without contacting you
+- **Copy Application** button for users without a configured mail client (e.g. on mobile) — they can paste the content into any webmail
+- Fully responsive, mobile-friendly
+
+## Deploy
+
+The page runs on any static hosting platform, for example:
 
 - **Cloudflare Pages**
 - **GitHub Pages**
 - **Vercel / Netlify**
-- **任意 Nginx / 对象存储静态站点**
+- **Any Nginx or object-storage static site**
 
-### Cloudflare Pages 示例
+### Cloudflare Pages example
 
-1. 在 [Cloudflare Dashboard](https://dash.cloudflare.com) 创建 Pages 项目
-2. 连接本仓库（或直接上传 `index.html`）
-3. 构建设置：Build command 留空，Build output directory 为 `/`
-4. 部署后添加自定义域名 `is-an.org` 即可
+1. Create a Pages project in the [Cloudflare Dashboard](https://dash.cloudflare.com).
+2. Connect this repository (or upload `index.html` directly).
+3. Build settings: leave Build command empty and set Build output directory to `/`.
+4. After deploying, add the custom domain `is-an.org`.
 
-## 自定义配置
+## Configuration
 
-如需修改收件邮箱，编辑 `index.html` 中的 `RECIPIENT` 变量：
+To change the recipient email, edit the `RECIPIENT` variable in `index.html`:
 
 ```javascript
 var RECIPIENT = 'contact@is-an.org';
 ```
 
-## 注意事项
+## Administrator workflow
 
-- 邮件通过 `mailto:` 打开申请者本地邮件客户端发送，不经过服务器
-- 页面同时提供「复制申请内容」按钮，便于在网页邮箱中手动粘贴发送
-- 审核通过后需要在 Cloudflare DNS 中添加对应子域名的解析记录
+1. Read the incoming application email.
+2. Approve or reject based on the service rules shown on the page.
+3. If approved, add the requested DNS record(s) for the subdomain in your DNS provider (e.g. Cloudflare):
+   - **NS record** — add the applicant's nameservers; the applicant then manages everything else themselves.
+   - **A / AAAA / CNAME** — add the record pointing to the target IP or domain.
+4. Reply to the applicant with the result.
 
-## 许可证
+## Notes
+
+- Emails are sent via `mailto:` from the applicant's local mail client — nothing goes through a server.
+- The page cannot check whether a subdomain is already taken; that is part of the manual review.
+- Domains that are left unmaintained or used for prohibited purposes may be reclaimed.
+
+## License
 
 MIT
