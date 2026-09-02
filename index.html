@@ -327,13 +327,13 @@
             border-top: none;
         }
 
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 20px; }
 
         .form-group label {
             display: block;
             font-weight: 500;
             font-size: 0.92rem;
-            margin-bottom: 7px;
+            margin-bottom: 8px;
             color: rgba(255, 255, 255, 0.9);
         }
 
@@ -343,7 +343,7 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 11px 14px;
+            padding: 12px 14px;
             border: 1px solid var(--input-border);
             border-radius: 8px;
             font-size: 0.95rem;
@@ -384,39 +384,73 @@
 
         .form-group textarea { resize: vertical; min-height: 84px; }
 
-        .subdomain-wrapper { display: flex; align-items: center; gap: 8px; }
+        .subdomain-wrapper {
+            display: flex;
+            align-items: stretch;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background: var(--input-bg);
+            overflow: hidden;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+
+        .subdomain-wrapper:focus-within {
+            border-color: var(--accent);
+            background: rgba(0, 112, 243, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.18);
+        }
+
+        .subdomain-wrapper input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            background: transparent;
+            padding: 12px 8px 12px 14px;
+            font-size: 0.95rem;
+            color: var(--text);
+            font-family: inherit;
+        }
+
+        .subdomain-wrapper input:focus {
+            outline: none;
+            box-shadow: none;
+            background: transparent;
+        }
 
         .subdomain-wrapper .prefix {
-            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            font-size: 0.92rem;
             color: var(--text-muted);
             white-space: nowrap;
             font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            border-left: 1px solid var(--input-border);
+            background: rgba(255, 255, 255, 0.025);
         }
-
-        .subdomain-wrapper input { flex: 1; }
 
         .dns-record {
             display: flex;
             align-items: stretch;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .dns-record select {
             flex: 0 0 auto;
-            width: 168px;
+            width: 140px;
         }
 
         .dns-record input { flex: 1; min-width: 0; }
 
         .dns-remove {
             flex: 0 0 auto;
-            width: 42px;
+            width: 40px;
             border: 1px solid var(--input-border);
             border-radius: 8px;
             background: transparent;
             color: var(--text-muted);
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             line-height: 1;
             cursor: pointer;
             font-family: inherit;
@@ -1029,40 +1063,43 @@
             /* ---------- Build the email content ---------- */
             function buildMailContent(data) {
                 var now = new Date();
-                var timeStr = now.toLocaleString('en-US');
+                var timeStr = now.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
 
                 var dnsLines = '';
                 for (var i = 0; i < data.records.length; i++) {
-                    dnsLines += '  ' + (i + 1) + '. [' + data.records[i].type + '] ' + data.records[i].value + '\n';
+                    var type = data.records[i].type;
+                    while (type.length < 5) type += ' ';
+                    dnsLines += '  • ' + type + '→  ' + data.records[i].value + '\n';
                 }
 
                 var body =
-                    '=============================================\n' +
-                    '          is-an.org Subdomain Request\n' +
-                    '=============================================\n\n' +
-                    'Desired subdomain : ' + data.subdomain + '.is-an.org\n' +
-                    'Name / Org        : ' + data.applicant + '\n' +
-                    'Contact email     : ' + data.email + '\n' +
-                    'Project type      : ' + data.projectType + '\n' +
-                    'Submitted at      : ' + timeStr + '\n\n' +
-                    'DNS records:\n' +
-                    dnsLines +
-                    'Project description:\n' +
-                    '---------------------------------------------\n' +
+                    'is-an.org — Subdomain Request\n' +
+                    '==================================================\n\n' +
+                    'Subdomain: ' + data.subdomain + '.is-an.org\n' +
+                    'Name / Org: ' + data.applicant + '\n' +
+                    'Contact email: ' + data.email + '\n' +
+                    'Project type: ' + data.projectType + '\n' +
+                    'Requested at: ' + timeStr + '\n\n' +
+                    'DNS records\n' +
+                    dnsLines + '\n' +
+                    'Project description\n' +
+                    '--------------------------------------------------\n' +
                     data.description + '\n' +
-                    '---------------------------------------------\n\n';
+                    '--------------------------------------------------\n';
 
                 if (data.note) {
-                    body += 'Notes:\n' + data.note + '\n\n';
+                    body += '\nNotes\n' +
+                            '--------------------------------------------------\n' +
+                            data.note + '\n';
                 }
 
                 body +=
-                    '=============================================\n' +
+                    '\n==================================================\n' +
                     'This email was generated by the is-an.org\n' +
-                    'application form. Please send it as-is;\n' +
-                    'we usually reply within 24-48 hours.\n';
+                    'application form. Please send it as-is; we\n' +
+                    'usually reply within 24-48 hours.\n';
 
-                var subject = '[is-an.org] Subdomain request: ' + data.subdomain + '.is-an.org';
+                var subject = '[is-an.org] Subdomain request — ' + data.subdomain + '.is-an.org';
                 return { subject: subject, body: body };
             }
 
